@@ -333,7 +333,7 @@ def go_display():
             
         fb.show(buffer)
 
-        buffer.save("/home/pi/back.png", format='png')
+        #buffer.save("/home/pi/back.png", format='png')
         
         return moode_meta
 
