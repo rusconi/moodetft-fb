@@ -7,7 +7,7 @@ text:
 
 back:
   # RGB colour for shadow or outline
-  red_b: 240
+  red_b: 11
   green_b: 31
   blue_b: 3
 
