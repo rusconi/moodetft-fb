@@ -15,12 +15,30 @@ from mediafile import MediaFile
 from io import BytesIO
 import math
 from numpy import mean
+import yaml
 
 
 __version__ = "0.1.1"
 
+txt_color = (224, 30, 20)
+shd_color = (18, 7, 224)
 
+confile = 'config.yml'
 
+# Read config.yml for user config
+if path.exists(confile):
+ 
+    with open(confile) as config_file:
+        data = yaml.load(config_file, Loader=yaml.FullLoader)
+
+        text_col = data['text']
+        back_col = data['back']
+        highlight = data['highlight']
+
+        txt_color = (text_col['red_t'], text_col['green_t'], text_col['blue_t'])
+        shd_color = (back_col['red_b'], back_col['green_b'], back_col['blue_b'])
+
+        hl_type = highlight['type']
 
 script_path = os.path.dirname(os.path.abspath( __file__ ))
 # set script path as current directory - 
@@ -203,14 +221,19 @@ def text_in_rect(canvas, text, font, rect, line_spacing=1.1, align='center', col
                 bounds[0] = min(bounds[0], x)
                 bounds[2] = max(bounds[2], x + line_width)
 
-                # dark outline
-                canvas.text((x-1, y), line, font=font, fill=(10,10,10), align=align)
-                canvas.text((x+1, y), line, font=font, fill=(10,10,10), align=align)
-                canvas.text((x, y-1), line, font=font, fill=(10,10,10), align=align)
-                canvas.text((x, y+1), line, font=font, fill=(10,10,10), align=align)
+                if hl_type == 1:
+                    # text outline
+                    canvas.text((x-1, y), line, font=font, fill=shd_color, align=align)
+                    canvas.text((x+1, y), line, font=font, fill=shd_color, align=align)
+                    canvas.text((x, y-1), line, font=font, fill=shd_color, align=align)
+                    canvas.text((x, y+1), line, font=font, fill=shd_color, align=align)
+                elif hl_type == 2:
+                    canvas.text((x-2, y-2), line, font=font, fill=shd_color, align=align)
+                    canvas.text((x-1, y-1), line, font=font, fill=shd_color, align=align)
+
 
                 # light inner text
-                canvas.text((x, y), line, font=font, fill=(240,240,240), align=align)
+                canvas.text((x, y), line, font=font, fill=txt_color, align=align)
                 y += line_height
 
             return tuple(bounds)
