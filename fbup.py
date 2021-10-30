@@ -22,6 +22,7 @@ __version__ = "0.1.1"
 
 txt_color = (224, 30, 20)
 shd_color = (18, 7, 224)
+hl_type = 0
 
 confile = 'config.yml'
 
