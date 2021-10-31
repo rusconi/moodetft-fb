@@ -5,11 +5,9 @@
 # moodetft-fb
 Moode now playing on TFT framebuffer (/dev/fb1)
 
+# Note
 
-## works on Moode 6.6.0  
-
-## Not tested on later versions Use at your own risk.
-
+The code for the framebuffer (framebuffer.py) is from http://github.com/robertmuth/Pytorinox
 
 ## Assumptions ##
 
@@ -28,7 +26,7 @@ Moode now playing on TFT framebuffer (/dev/fb1)
 In the Local Services section of Moode's System Config;
 
 * Ensure 'Metadata file' is on
-* Ensure 'LCD update engine' is on
+
 
 ## Installation ##
 
@@ -41,20 +39,16 @@ In the Local Services section of Moode's System Config;
     cd /home/pi/moodetft-fb
     ```
 
-    Install LMSTools
 
-    Download LMSTools-master.zip from https://github.com/mbuffat/LMSTools and copy the LMSTools
-    folder into /home/pi/moodetft-fb.
 
 3. Install python scripts and required libraries
 
     The install script has 4 steps which can be run/not rub by answering y or n at the appropriate prompt
     - install required libraries
-    - install lcdup.py
     - install MoodeTFT-FB as a service
     - reboot the RPi
 
-    The first two steps are necessary for the python scripts to display on the TFT. Install these for testing.
+    The first step is necessary for the python scripts to display on the TFT. Install these for testing.
 
     How to install for testing...
 
@@ -73,10 +67,18 @@ In the Local Services section of Moode's System Config;
     
     you can run `install-moode-tft-fb.sh` again to install the service and reboot.
 
- ## Licence ##
+ ### Configuration ###
 
- Fonts
+ The text display configuration is in the file config.yml
 
- Framebuffer
+ Use an online color picker to choose the color you want and the copy the RGB values to the 
 
- others
+ corresponding places in config.yml
+
+ You can also change how to highlight text.
+ 
+ 0. No highlight
+ 1. outline
+ 2. shadow
+
+ 
