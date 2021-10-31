@@ -2,7 +2,7 @@
 #
 import asyncio
 from watchgod import awatch
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageStat
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageStat, ImageColor
 from framebuffer import Framebuffer  # pytorinox
 import subprocess
 import time
@@ -18,27 +18,15 @@ from numpy import mean
 import yaml
 
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
-txt_color = (224, 30, 20)
-shd_color = (18, 7, 224)
+txt_color = (240, 240, 240)
+shd_color = (20, 20, 20)
+hl_type = 2
 
 confile = 'config.yml'
 
-# Read config.yml for user config
-if path.exists(confile):
- 
-    with open(confile) as config_file:
-        data = yaml.load(config_file, Loader=yaml.FullLoader)
 
-        text_col = data['text']
-        back_col = data['back']
-        highlight = data['highlight']
-
-        txt_color = (text_col['red_t'], text_col['green_t'], text_col['blue_t'])
-        shd_color = (back_col['red_b'], back_col['green_b'], back_col['blue_b'])
-
-        hl_type = highlight['type']
 
 script_path = os.path.dirname(os.path.abspath( __file__ ))
 # set script path as current directory - 
@@ -86,6 +74,8 @@ volup  = '\uf028'
 source_char = {'bluetooth':'\uf293', 'airplay':'\uf01d', 'spotify' :'\uf1bc', 'lms':'\uf01a', 'library':'\uf00a', 'radio':'\uf3c9'}
 fb.backlight(True)
 
+
+
 def isServiceActive(service):
 
     waiting = True
@@ -109,7 +99,30 @@ def isServiceActive(service):
         time.sleep(1)
 
     return active
+'''
+def loadConfig(conf):
+    # Read config.yml for user config
+    #txt_cl = (240,240,240)
+    #shd_cl = (15,15,15)
+    if path.exists(conf):
+        print("conf found")
+        with open(conf) as config_file:
+            data = yaml.load(config_file, Loader=yaml.FullLoader)
 
+            text_col = data['text']
+            back_col = data['back']
+            highlight = data['highlight']
+
+            txt_cl = (int(text_col['red_t']), int(text_col['green_t']), int(text_col['blue_t']))
+            #print(txt_col)
+            shd_cl = (int(back_col['red_b']), int(back_col['green_b']), int(back_col['blue_b']))
+            print(shd_col)
+            hl_t = int(highlight['type'])
+            #print(hl_t)
+            
+    return txt_cl, shd_cl, hl_t
+'''
+#txt_col, bak_col, hl_type = loadConfig(confile)
 
 def getMoodeMetadata(metafile):
     # Initalise dictionary
@@ -180,11 +193,11 @@ def get_cover(metaDict):
                                 return cover
     return cover
 
-def text_in_rect(canvas, text, font, rect, line_spacing=1.1, align='center', color=(240,240,240)):
+def text_in_rect(canvas, text, font, rect, line_spacing=1.1, align='center', color=(240,240,240), shd_color=(0,0,0), hlite=0):
     width = rect[2] - rect[0]
     height = rect[3] - rect[1]
   
-
+      
     # Given a rectangle, reflow and scale text to fit, centred
     while font.size > 0:
         space_width = font.getsize(" ")[0]
@@ -221,19 +234,19 @@ def text_in_rect(canvas, text, font, rect, line_spacing=1.1, align='center', col
                 bounds[0] = min(bounds[0], x)
                 bounds[2] = max(bounds[2], x + line_width)
 
-                if hl_type == 1:
+                if hlite == 1:
                     # text outline
                     canvas.text((x-1, y), line, font=font, fill=shd_color, align=align)
                     canvas.text((x+1, y), line, font=font, fill=shd_color, align=align)
                     canvas.text((x, y-1), line, font=font, fill=shd_color, align=align)
                     canvas.text((x, y+1), line, font=font, fill=shd_color, align=align)
-                elif hl_type == 2:
+                elif hlite == 2:
                     canvas.text((x-2, y-2), line, font=font, fill=shd_color, align=align)
                     canvas.text((x-1, y-1), line, font=font, fill=shd_color, align=align)
 
 
                 # light inner text
-                canvas.text((x, y), line, font=font, fill=txt_color, align=align)
+                canvas.text((x, y), line, font=font, fill=color, align=align)
                 y += line_height
 
             return tuple(bounds)
@@ -242,6 +255,24 @@ def text_in_rect(canvas, text, font, rect, line_spacing=1.1, align='center', col
 
 
 def go_display():
+
+    #txt_col, bak_col, hl_type = loadConfig(confile)
+    # Read config.yml for user config
+    #txt_cl = (240,240,240)
+    #shd_cl = (15,15,15)
+    if path.exists(confile):
+        
+        with open(confile) as config_file:
+            data = yaml.load(config_file, Loader=yaml.FullLoader)
+            
+            textz = data['text']
+            txt_col = (textz['red'], textz['green'], textz['blue'])
+            backz = data['back']
+            bak_col = (backz['red'], backz['green'], backz['blue'])
+            #bak_col = ImageColor.getrgb(colors['back'])
+            highlight = data['highlight']
+            hl_type = int(highlight['type'])
+        
 
     metafile = '/var/local/www/currentsong.txt'
 
@@ -274,13 +305,14 @@ def go_display():
         r = im_mean[0]
         cb = 1
         mn = mean(im_mean)
-        if mn > 130:
+
+        '''if mn > 130:
             cb = 0.25
             if mn > 215:
                 cb = 0.5
             txt_col = (55,55,55)
         else:
-            txt_col = (200,200,200)
+            txt_col = (200,200,200)'''
                 
         enhancer = ImageEnhance.Brightness(cover)
             
@@ -290,32 +322,32 @@ def go_display():
         buffer.paste(cover.resize((220,220), Image.LANCZOS),(50,10))
         
         if moode_meta['source'] in ['radio', 'library', 'lms']:
-            text_in_rect(draw, moode_meta['title'], font, (10,5,310,60), line_spacing=1.1, color=txt_col)
-            text_in_rect(draw, moode_meta['artist'], font, (10,70,310,125), line_spacing=1.1, color=txt_col)
-            text_in_rect(draw, moode_meta['album'], font, (25,130,295,215), line_spacing=1.1, color=txt_col)
+            text_in_rect(draw, moode_meta['title'], font, (10,5,310,60), line_spacing=1.1, color=txt_col, shd_color=bak_col, hlite=hl_type)
+            text_in_rect(draw, moode_meta['artist'], font, (10,70,310,125), line_spacing=1.1, color=txt_col, shd_color=bak_col, hlite=hl_type)
+            text_in_rect(draw, moode_meta['album'], font, (25,130,295,215), line_spacing=1.1, color=txt_col, shd_color=bak_col, hlite=hl_type)
                
         
         if 'source' in moode_meta:
             if moode_meta['source'] in ['bluetooth', 'airplay', 'spotify']:
-                text_in_rect(draw, source_char[moode_meta['source']], bi_font, (20,80,300,160), line_spacing=1.1, color=txt_col)
+                text_in_rect(draw, source_char[moode_meta['source']], bi_font, (20,80,300,160), line_spacing=1.1, color=txt_col, shd_color=bak_col, hlite=hl_type)
             else:
-                text_in_rect(draw, source_char[moode_meta['source']], i_font, (5,200,55,220), line_spacing=1.1, align='left', color=txt_col)
+                text_in_rect(draw, source_char[moode_meta['source']], i_font, (5,200,55,220), line_spacing=1.1, align='left', color=txt_col, shd_color=bak_col, hlite=hl_type)
                         
             if  moode_meta['source'] == 'library':
-                text_in_rect(draw, music, i_font, (3,152,22,172), line_spacing=1.1, color=txt_col)
-                text_in_rect(draw, moode_meta['track'], v_font, (3,175,22,195), line_spacing=1.1, color=txt_col)
-                text_in_rect(draw, cd, i_font, (298,152,317,172), line_spacing=1.1, color=txt_col)
-                text_in_rect(draw, mpd_status['playlistlength'], v_font, (298,175,317,195), line_spacing=1.1, color=txt_col)
+                text_in_rect(draw, music, i_font, (3,152,22,172), line_spacing=1.1, color=(txt_col), shd_color=(bak_col), hlite=hl_type)
+                text_in_rect(draw, moode_meta['track'], v_font, (3,175,22,195), line_spacing=1.1, color=txt_col, shd_color=bak_col, hlite=hl_type)
+                text_in_rect(draw, cd, i_font, (298,152,317,172), line_spacing=1.1, color=txt_col, shd_color=bak_col, hlite=hl_type)
+                text_in_rect(draw, mpd_status['playlistlength'], v_font, (298,175,317,195), line_spacing=1.1, color=txt_col, shd_color=bak_col, hlite=hl_type)
                 
         if 'state' in moode_meta:
             if moode_meta['state'] == 'pause':
-                text_in_rect(draw, '\uf04c', i_font, (300,200,320,220), line_spacing=1.1, align='left', color=txt_col)
+                text_in_rect(draw, '\uf04c', i_font, (300,200,320,220), line_spacing=1.1, align='left', color=txt_col, shd_color=bak_col, hlite=hl_type)
                 
             elif moode_meta['state'] == 'play':
-                text_in_rect(draw, '\uf04b', i_font, (300,200,320,220), line_spacing=1.1, align='left', color=txt_col)
+                text_in_rect(draw, '\uf04b', i_font, (300,200,320,220), line_spacing=1.1, align='left', color=txt_col, shd_color=bak_col, hlite=hl_type)
                 
             elif moode_meta['state'] == 'stop':
-                text_in_rect(draw, '\uf04d', i_font, (300,200,320,220), line_spacing=1.1, align='left', color=txt_col)
+                text_in_rect(draw, '\uf04d', i_font, (300,200,320,220), line_spacing=1.1, align='left', color=txt_col, shd_color=bak_col, hlite=hl_type)
                 
         if 'volume' in moode_meta:
             c_vol = int(moode_meta['volume'])
@@ -323,12 +355,15 @@ def go_display():
             if bar_w < 1:
                 bar_w = 1
                 
-            text_in_rect(draw, 'VOL:', v_font, (5,220,65,240), line_spacing=1.1, align='left', color=txt_col)
+            text_in_rect(draw, 'VOL:', v_font, (5,220,65,240), line_spacing=1.1, align='left', color=txt_col, shd_color=bak_col, hlite=hl_type)
             
             draw.rectangle((45,224,315,234  ), fill=None, outline=txt_col)
+            draw.rectangle((46,225,bar_w+48,233), fill=bak_col)
+            draw.rectangle((48,227,bar_w+46,231), fill=txt_col, outline=txt_col)
+
            
-            ibar = bar_img.resize((bar_w, 7), Image.LANCZOS)
-            buffer.paste(ibar, (volstart, 226), ibar)
+            #ibar = bar_img.resize((bar_w, 7), Image.LANCZOS)
+            #buffer.paste(ibar, (volstart, 226), ibar)
             
             
         fb.show(buffer)
