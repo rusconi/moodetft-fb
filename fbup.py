@@ -18,7 +18,7 @@ from numpy import mean
 import yaml
 
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 txt_color = (240, 240, 240)
 shd_color = (20, 20, 20)

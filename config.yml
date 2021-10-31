@@ -1,4 +1,4 @@
-# version = "0.0.6"
+# version = "0.1.6"
 text:
   # RGB colour for text
   red: 256
