@@ -16,9 +16,10 @@ from io import BytesIO
 import math
 from numpy import mean
 import yaml
+import urllib.parse
 
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 txt_color = (240, 240, 240)
 shd_color = (20, 20, 20)
@@ -137,6 +138,8 @@ def getMoodeMetadata(metafile):
             (key, value) = nowplayingmeta[i].split('=')
             metaDict[key] = value
             i += 1
+
+        metaDict['coverurl'] = urllib.parse.unquote(metaDict['coverurl'])
         
         metaDict['source'] = 'library'
         if 'file' in metaDict:
