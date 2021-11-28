@@ -58,6 +58,11 @@ In the Local Services section of Moode's System Config;
 
     ### Testing ###
 
+    you may have to change permissions on the following files.
+    
+    ```bash
+    chmod +x fbup.py framebuffer.py install-moode-tft-fb.sh moodetft-fb.sh clear_tftfb.py
+    ```
     To test after installing libraries and lcdup.py:
 
     ```bash
