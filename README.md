@@ -5,6 +5,8 @@
 # moodetft-fb
 Moode now playing on TFT framebuffer (/dev/fb1)
 
+0.1.4 - update for change on moode coverurl
+
 # Note
 
 The code for the framebuffer (framebuffer.py) is from http://github.com/robertmuth/Pytorinox
