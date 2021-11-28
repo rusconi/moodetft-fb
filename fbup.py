@@ -100,30 +100,7 @@ def isServiceActive(service):
         time.sleep(1)
 
     return active
-'''
-def loadConfig(conf):
-    # Read config.yml for user config
-    #txt_cl = (240,240,240)
-    #shd_cl = (15,15,15)
-    if path.exists(conf):
-        print("conf found")
-        with open(conf) as config_file:
-            data = yaml.load(config_file, Loader=yaml.FullLoader)
 
-            text_col = data['text']
-            back_col = data['back']
-            highlight = data['highlight']
-
-            txt_cl = (int(text_col['red_t']), int(text_col['green_t']), int(text_col['blue_t']))
-            #print(txt_col)
-            shd_cl = (int(back_col['red_b']), int(back_col['green_b']), int(back_col['blue_b']))
-            print(shd_col)
-            hl_t = int(highlight['type'])
-            #print(hl_t)
-            
-    return txt_cl, shd_cl, hl_t
-'''
-#txt_col, bak_col, hl_type = loadConfig(confile)
 
 def getMoodeMetadata(metafile):
     # Initalise dictionary
